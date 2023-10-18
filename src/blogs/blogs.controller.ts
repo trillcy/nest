@@ -45,6 +45,7 @@ export class BlogsController {
     @Param('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
+    if (!id) res.sendStatus(HttpStatus.NOT_FOUND); //404
     const result = await this.blogsService.getById(id);
     console.log('48----', result);
 
@@ -63,6 +64,8 @@ export class BlogsController {
     @Query() query: QueryPostInputDto,
     @Res({ passthrough: true }) res: Response,
   ): Promise<PaginatorPostViewDto | null> {
+    if (!blogId) res.sendStatus(HttpStatus.NOT_FOUND); //404
+
     const result = this.postsService.getPostsByBlogId(blogId, query);
     if (!result) res.sendStatus(HttpStatus.NOT_FOUND); //404
     return result;
@@ -74,6 +77,8 @@ export class BlogsController {
     @Param('blogId') blogId: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<PostViewDto | null> {
+    if (!blogId) res.sendStatus(HttpStatus.NOT_FOUND); //404
+
     const newPostInput = { ...postInput, blogId };
     const result = await this.blogsService.createPostForBlog(blogId, postInput);
     if (!result) res.sendStatus(HttpStatus.NOT_FOUND); //404
@@ -86,6 +91,7 @@ export class BlogsController {
     @Body() blogInput: BlogInputDto,
     @Res({ passthrough: true }) res: Response,
   ) {
+    if (!id) res.sendStatus(HttpStatus.NOT_FOUND); //404
     const result = this.blogsService.update(id, blogInput);
     console.log('76---put', result);
     if (!result) res.sendStatus(HttpStatus.NOT_FOUND); //404
@@ -97,6 +103,8 @@ export class BlogsController {
     @Param('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
+    if (!id) res.sendStatus(HttpStatus.NOT_FOUND); //404
+
     // TODO: если возвращается null, то документ не найден - надо 404
     const result = await this.blogsService.delete(id);
     if (!result) return res.sendStatus(HttpStatus.NOT_FOUND); //404
