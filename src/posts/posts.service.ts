@@ -224,10 +224,32 @@ export class PostsService {
   }
 
   async getById(id: string): Promise<PostViewDto | null> {
-    return await this.postModel.findById(id);
+    if (!Types.ObjectId.isValid(id)) return null;
+    const result = await this.postModel.findById(id);
+    if (!result) return null;
+    return {
+      id: result._id.toString(),
+      title: result.title,
+      shortDescription: result.shortDescription,
+      content: result.content,
+      blogId: result.blogId,
+      blogName: result.blogName,
+      createdAt: result.createdAt.toISOString(),
+      extendedLikesInfo: {
+        likesCount: result.extendedLikesInfo.likesCount,
+        dislikesCount: result.extendedLikesInfo.dislikesCount,
+        myStatus: 'None',
+        newestLikes: [],
+      },
+    };
   }
 
   async createPost(postDto: PostInputDto): Promise<PostViewDto | null> {
+    console.log('231==post', postDto);
+
+    if (!Types.ObjectId.isValid(postDto.blogId)) return null;
+    console.log('232==post', postDto.blogId);
+
     const blog = await this.blogModel.findById(postDto.blogId);
     // В swagger нет данных если блог не найден
     if (!blog) return null;

@@ -41,11 +41,14 @@ export class UsersController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string, @Res({ passthrough: true }) res: Response) {
+  async remove(
+    @Param('id') id: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     if (!id) return res.sendStatus(HttpStatus.NOT_FOUND); //404
     // возвращает удаленный объект
     // или null если не найдет его
-    const result = this.usersService.remove(id);
+    const result = await this.usersService.remove(id);
     if (!result) return res.sendStatus(HttpStatus.NOT_FOUND); //404
     return res.sendStatus(HttpStatus.NO_CONTENT); //204
   }

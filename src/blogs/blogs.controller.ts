@@ -81,12 +81,12 @@ export class BlogsController {
   }
 
   @Put('/:id')
-  update(
+  async update(
     @Param('id') id: string,
     @Body() blogInput: BlogInputDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = this.blogsService.update(id, blogInput);
+    const result = await this.blogsService.update(id, blogInput);
     console.log('76---put', result);
     if (!result) return res.sendStatus(HttpStatus.NOT_FOUND); //404
     return res.sendStatus(HttpStatus.NO_CONTENT); //204

@@ -42,8 +42,6 @@ export class PostsController {
     @Param('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (!id) return res.sendStatus(HttpStatus.NOT_FOUND); //404
-
     const result = await this.postsService.getById(id);
     if (!result) return res.sendStatus(HttpStatus.NOT_FOUND); //404
     return result;

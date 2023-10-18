@@ -142,6 +142,8 @@ export class BlogsService {
     const result = await this.blogModel.findByIdAndUpdate(id, blogDto, {
       new: false, //если не найден, то новый не создается
     });
+    console.log('145==blog', result);
+
     return result;
   }
 
