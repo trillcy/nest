@@ -8,7 +8,7 @@ import {
   PaginatorBlogViewDto,
 } from 'src/blogs/blogs.dto';
 import { Blog, BlogDocument } from './blogs.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { PostInputDto, PostViewDto } from 'src/posts/posts.dto';
 import { Post, PostDocument } from 'src/posts/posts.schema';
 import { PostsService } from 'src/posts/posts.service';
@@ -91,8 +91,7 @@ export class BlogsService {
   }
 
   async getById(id: string): Promise<BlogViewDto | null> {
-    console.log('87====', id);
-    // ??? если id не находит, то выдает ошибку 500 ???
+    if (!Types.ObjectId.isValid(id)) return null;
     const result = await this.blogModel.findById(id);
     console.log('88===', result);
 
@@ -111,6 +110,8 @@ export class BlogsService {
     blogId: string,
     postInput: BlogPostInputDto,
   ): Promise<PostViewDto | null> {
+    if (!Types.ObjectId.isValid(blogId)) return null;
+
     const blog = await this.blogModel.findById(blogId);
     if (!blog) return null;
 
@@ -137,8 +138,7 @@ export class BlogsService {
   }
 
   async update(id: string, blogDto: BlogInputDto): Promise<any> {
-    // возвращается СТАРЫЙ документ если найден
-    // ??? если не найден ошибка 500
+    if (!Types.ObjectId.isValid(id)) return null;
     const result = await this.blogModel.findByIdAndUpdate(id, blogDto, {
       new: false, //если не найден, то новый не создается
     });
@@ -146,8 +146,9 @@ export class BlogsService {
   }
 
   async delete(id: string): Promise<any> {
+    if (!Types.ObjectId.isValid(id)) return null;
+
     const result = await this.blogModel.findByIdAndDelete(id);
-    console.log('123===remove', result);
     // ???возвращает удаленный объект || null если не найдет
     return result;
   }

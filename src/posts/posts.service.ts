@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Post, PostDocument } from './posts.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   PostDBDto,
@@ -39,8 +39,12 @@ export class PostsService {
     blogId: string,
     query: QueryPostInputDto,
   ): Promise<PaginatorPostViewDto | null> {
+    if (!Types.ObjectId.isValid(blogId)) return null;
     const blog = await this.blogModel.findById(blogId);
+    console.log('43===post', blog);
+
     if (!blog) return null;
+    // ------
     let sortField =
       query.sortBy && postsFields.includes(query.sortBy)
         ? query.sortBy
@@ -260,6 +264,8 @@ export class PostsService {
   }
 
   async updatePost(id: string, postDto: PostInputDto): Promise<any> {
+    if (!Types.ObjectId.isValid(id)) return null;
+
     const result = await this.postModel.findByIdAndUpdate(id, postDto, {
       new: false,
     }); //новый не создается если не найден;
@@ -268,6 +274,8 @@ export class PostsService {
   }
 
   async remove(id: string): Promise<any> {
+    if (!Types.ObjectId.isValid(id)) return null;
+
     const result = await this.postModel.findByIdAndRemove(id);
     console.log('190==', result);
 

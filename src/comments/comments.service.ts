@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginatorCommentViewDto } from 'src/comments/comments.dto';
 import { Comment, CommentDocument } from './comments.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CommentViewDto, QueryCommentInputDto } from './comments.dto';
 import { PostsService } from 'src/posts/posts.service';
 import { Post, PostDocument } from 'src/posts/posts.schema';
@@ -30,6 +30,8 @@ export class CommentsService {
     query: QueryCommentInputDto,
   ): Promise<PaginatorCommentViewDto | null> {
     // -----
+    if (!Types.ObjectId.isValid(postId)) return null;
+
     const post = await this.postModel.findById(postId);
     if (!post) return null;
     const sortField =
@@ -95,9 +97,7 @@ export class CommentsService {
   }
 
   async getById(id: string): Promise<CommentViewDto | null> {
-    console.log('93====', id);
     const result = await this.commentModel.findById(id);
-    console.log('95===', result);
 
     if (!result) return null;
     return {
@@ -115,40 +115,6 @@ export class CommentsService {
       },
     };
   }
-  /*
-  async create(blogDto: BlogInputDto): Promise<BlogViewDto> {
-    const newBlog = new this.commentModel({
-      ...blogDto,
-      createdAt: new Date().toISOString(),
-      isMembership: false,
-    });
-    const result = await newBlog.save();
-    return {
-      id: result._id.toString(),
-      name: result.name,
-      description: result.description,
-      websiteUrl: result.websiteUrl,
-      createdAt: result.createdAt,
-      isMembership: result.isMembership,
-    };
-  }
-
-  async update(id: string, blogDto: BlogInputDto): Promise<any> {
-    // возвращается СТАРЫЙ документ если найден
-    // ??? если не найден ошибка 500
-    const result = await this.commentModel.findByIdAndUpdate(id, blogDto, {
-      new: false, //если не найден, то новый не создается
-    });
-    return result;
-  }
-
-  async remove(id: string): Promise<any> {
-    const result = await this.commentModel.findByIdAndRemove(id);
-    console.log('123===remove', result);
-    // возвращает удаленный объект || null если не найдет
-    return result;
-  }
-  */
   async deleteAll(): Promise<boolean> {
     const result = await this.commentModel.deleteMany();
     return result.acknowledged ? true : false;

@@ -9,7 +9,7 @@ import {
 } from './users.dto';
 import { User, UserDocument } from './users.schema';
 import bcrypt from 'bcrypt';
-const usersFields = ['login', 'email', 'createdAt'];
+const usersFields = ['id', 'login', 'email', 'createdAt'];
 
 const usersDirections = ['asc', 'desc'];
 
@@ -20,11 +20,23 @@ export class UsersService {
   async getAll(query: QueryUserInputDto): Promise<PaginatorUserViewDto> {
     const searchLogin = query.searchLoginTerm ? query.searchLoginTerm : '';
     const searchEmail = query.searchEmailTerm ? query.searchEmailTerm : '';
-    // -----
-    const sortField =
-      query.sortBy && usersFields.includes(query.sortBy)
-        ? query.sortBy
-        : 'createdAt';
+    // ----- createdAt || login
+    let sortField;
+    if (query.sortBy && usersFields.includes(query.sortBy)) {
+      switch (query.sortBy) {
+        case 'createdAt':
+          sortField = 'accountData.createdAt';
+          break;
+        case 'login':
+          sortField = 'accountData.userName.login';
+          break;
+        case 'email':
+          sortField = 'accountData.userName.email';
+          break;
+      }
+    } else {
+      sortField = 'accountData.createdAt';
+    }
     const sortString =
       query.sortDirection && usersDirections.includes(query.sortDirection)
         ? query.sortDirection
