@@ -111,6 +111,9 @@ export class BlogsService {
     blogId: string,
     postInput: BlogPostInputDto,
   ): Promise<PostViewDto | null> {
+    const blog = await this.blogModel.findById(blogId);
+    if (!blog) return null;
+
     const newPostInput = { ...postInput, blogId };
     const result = await this.postsService.createPost(newPostInput);
     return result;

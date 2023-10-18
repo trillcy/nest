@@ -6,6 +6,8 @@ import {
   Param,
   Query,
   Body,
+  Res,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   PaginatorUserViewDto,
@@ -14,6 +16,7 @@ import {
   UserViewDto,
 } from './users.dto';
 import { UsersService } from './users.service';
+import { Response } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -38,9 +41,11 @@ export class UsersController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string): Promise<UserViewDto | null> {
+  remove(@Param('id') id: string, @Res({ passthrough: true }) res: Response) {
     // возвращает удаленный объект
     // или null если не найдет его
-    return this.usersService.remove(id);
+    const result = this.usersService.remove(id);
+    if (!result) res.sendStatus(HttpStatus.NOT_FOUND); //404
+    return res.sendStatus(HttpStatus.NO_CONTENT); //204
   }
 }

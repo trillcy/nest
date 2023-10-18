@@ -75,6 +75,8 @@ export class PostsService {
       .skip(skipElements)
       .limit(size)
       .lean();
+    console.log('78===post', items);
+
     const totalCount = await this.postModel.countDocuments({ blogId });
     const pagesCount = Math.ceil(totalCount / size);
 

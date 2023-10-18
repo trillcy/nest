@@ -4,6 +4,8 @@ import { PaginatorCommentViewDto } from 'src/comments/comments.dto';
 import { Comment, CommentDocument } from './comments.schema';
 import { Model } from 'mongoose';
 import { CommentViewDto, QueryCommentInputDto } from './comments.dto';
+import { PostsService } from 'src/posts/posts.service';
+import { Post, PostDocument } from 'src/posts/posts.schema';
 
 const commentsFields = [
   'content',
@@ -20,13 +22,16 @@ const commentsDirections = ['asc', 'desc'];
 export class CommentsService {
   constructor(
     @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
+    @InjectModel(Post.name) private postModel: Model<PostDocument>,
   ) {}
 
   async getCommentsByPostId(
     postId: string,
     query: QueryCommentInputDto,
-  ): Promise<PaginatorCommentViewDto> {
+  ): Promise<PaginatorCommentViewDto | null> {
     // -----
+    const post = await this.postModel.findById(postId);
+    if (!post) return null;
     const sortField =
       query.sortBy && commentsFields.includes(query.sortBy)
         ? query.sortBy
