@@ -13,6 +13,8 @@ import { User, UserSchema } from './users/users.schema';
 import { UsersService } from './users/users.service';
 import { Comment, CommentSchema } from './comments/comments.schema';
 import { TestingController } from './testing/testing.controller';
+import { ConfigModule } from '@nestjs/config';
+import { CommentsService } from './comments/comments.service';
 
 const mongooseModels = [
   { name: Blog.name, schema: BlogSchema },
@@ -23,9 +25,13 @@ const mongooseModels = [
 
 @Module({
   imports: [
-    MongooseModule.forRoot(
-      'mongodb+srv://aermakov72:MObdb4xJff0p1YPC@cluster0.byjv9wm.mongodb.net/incubator?retryWrites=true&w=majority',
-    ),
+    ConfigModule.forRoot({
+      envFilePath: '.env',
+      isGlobal: true,
+    }),
+    MongooseModule.forRoot(process.env.MONGO_URI as string),
+    //   'mongodb+srv://aermakov72:MObdb4xJff0p1YPC@cluster0.byjv9wm.mongodb.net/incubator?retryWrites=true&w=majority',
+    // ),
     MongooseModule.forFeature(mongooseModels),
   ],
   controllers: [
@@ -35,6 +41,12 @@ const mongooseModels = [
     BlogsController,
     TestingController,
   ],
-  providers: [AppService, BlogsService, PostsService, UsersService],
+  providers: [
+    AppService,
+    BlogsService,
+    PostsService,
+    UsersService,
+    CommentsService,
+  ],
 })
 export class AppModule {}

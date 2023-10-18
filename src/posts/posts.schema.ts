@@ -1,29 +1,33 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Mongoose } from 'mongoose';
 
 export type PostDocument = HydratedDocument<Post>;
 
 @Schema()
 export class Status {
-  @Prop()
+  @Prop({ type: Date, default: null })
   addedAt: Date | null;
-  @Prop()
+  @Prop({ type: String, default: null })
   status: string | null;
-  @Prop()
+  @Prop({ type: String, default: null })
   userId: string | null;
-  @Prop()
+  @Prop({ type: String, default: null })
   login: string | null;
 }
 
-@Schema()
+const StatusSchema = SchemaFactory.createForClass(Status);
+
+@Schema({ _id: false })
 export class Extended {
   @Prop()
   likesCount: number;
   @Prop()
   dislikesCount: number;
-  @Prop()
-  statuses: Status;
+  @Prop({ type: [StatusSchema], default: [] })
+  statuses: Status[] | [];
 }
+const ExtendedSchema = SchemaFactory.createForClass(Extended);
+
 @Schema()
 export class Post {
   @Prop()
@@ -38,7 +42,7 @@ export class Post {
   blogId: string;
   @Prop()
   blogName: string;
-  @Prop()
+  @Prop({ type: ExtendedSchema })
   extendedLikesInfo: Extended;
 }
 

@@ -5,11 +5,13 @@ export type CommentDocument = HydratedDocument<Comment>;
 
 @Schema()
 export class Status {
-  @Prop()
+  @Prop({ type: String, default: null })
   status: string | null;
-  @Prop()
+  @Prop({ type: String, default: null })
   userId: string | null;
 }
+
+const StatusSchema = SchemaFactory.createForClass(Status);
 
 @Schema()
 export class Extended {
@@ -17,9 +19,11 @@ export class Extended {
   likesCount: number;
   @Prop()
   dislikesCount: number;
-  @Prop()
-  statuses: Status;
+  @Prop({ type: [StatusSchema], default: [] })
+  statuses: Status[] | [];
 }
+const ExtendedSchema = SchemaFactory.createForClass(Extended);
+
 @Schema()
 export class CommentatorInfo {
   @Prop()
@@ -27,17 +31,20 @@ export class CommentatorInfo {
   @Prop()
   userLogin: string;
 }
+
+const CommentatorInfoSchema = SchemaFactory.createForClass(CommentatorInfo);
+
 @Schema()
 export class Comment {
   @Prop()
   postId: string;
   @Prop()
   content: string;
-  @Prop()
+  @Prop({ type: CommentatorInfoSchema })
   commentatorInfo: CommentatorInfo;
   @Prop()
   createdAt: Date;
-  @Prop()
+  @Prop({ type: ExtendedSchema })
   likesInfo: Extended;
 }
 
