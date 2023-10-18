@@ -23,11 +23,13 @@ export class CommentsController {
   async getById(
     @Param('id') id: string,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<CommentViewDto | null> {
+  ) {
+    if (!id) return res.sendStatus(HttpStatus.NOT_FOUND); //404
+
     const result = await this.commentsService.getById(id);
     console.log('39--comment.getByPostId--', result);
 
-    // if (!result) return res.sendStatus(HttpStatus.NOT_FOUND);
+    if (!result) return res.sendStatus(HttpStatus.NOT_FOUND);
     return result;
   }
   /*

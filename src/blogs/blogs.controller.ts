@@ -45,7 +45,7 @@ export class BlogsController {
     @Param('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (!id) res.sendStatus(HttpStatus.NOT_FOUND); //404
+    if (!id) return res.sendStatus(HttpStatus.NOT_FOUND); //404
     const result = await this.blogsService.getById(id);
     console.log('48----', result);
 
@@ -63,11 +63,11 @@ export class BlogsController {
     @Param('blogId') blogId: string,
     @Query() query: QueryPostInputDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<PaginatorPostViewDto | null> {
-    if (!blogId) res.sendStatus(HttpStatus.NOT_FOUND); //404
+  ) {
+    if (!blogId) return res.sendStatus(HttpStatus.NOT_FOUND); //404
 
     const result = this.postsService.getPostsByBlogId(blogId, query);
-    if (!result) res.sendStatus(HttpStatus.NOT_FOUND); //404
+    if (!result) return res.sendStatus(HttpStatus.NOT_FOUND); //404
     return result;
   }
 
@@ -76,12 +76,12 @@ export class BlogsController {
     @Body() postInput: BlogPostInputDto,
     @Param('blogId') blogId: string,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<PostViewDto | null> {
-    if (!blogId) res.sendStatus(HttpStatus.NOT_FOUND); //404
+  ) {
+    if (!blogId) return res.sendStatus(HttpStatus.NOT_FOUND); //404
 
     const newPostInput = { ...postInput, blogId };
     const result = await this.blogsService.createPostForBlog(blogId, postInput);
-    if (!result) res.sendStatus(HttpStatus.NOT_FOUND); //404
+    if (!result) return res.sendStatus(HttpStatus.NOT_FOUND); //404
     return result;
   }
 
@@ -94,7 +94,7 @@ export class BlogsController {
     if (!id) res.sendStatus(HttpStatus.NOT_FOUND); //404
     const result = this.blogsService.update(id, blogInput);
     console.log('76---put', result);
-    if (!result) res.sendStatus(HttpStatus.NOT_FOUND); //404
+    if (!result) return res.sendStatus(HttpStatus.NOT_FOUND); //404
     return res.sendStatus(HttpStatus.NO_CONTENT); //204
   }
 
@@ -110,8 +110,4 @@ export class BlogsController {
     if (!result) return res.sendStatus(HttpStatus.NOT_FOUND); //404
     return res.sendStatus(HttpStatus.NO_CONTENT); //204
   }
-  // @Delete()
-  // removeAll(): Promise<boolean> {
-  //   return this.blogsService.removeAll();
-  // }
 }

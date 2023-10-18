@@ -42,8 +42,10 @@ export class PostsController {
     @Param('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
+    if (!id) return res.sendStatus(HttpStatus.NOT_FOUND); //404
+
     const result = await this.postsService.getById(id);
-    if (!result) res.sendStatus(HttpStatus.NOT_FOUND); //404
+    if (!result) return res.sendStatus(HttpStatus.NOT_FOUND); //404
     return result;
   }
 
@@ -53,11 +55,13 @@ export class PostsController {
     @Query() query: QueryCommentInputDto,
     @Res({ passthrough: true }) res: Response,
   ) {
+    if (!postId) return res.sendStatus(HttpStatus.NOT_FOUND); //404
+
     const result = await this.commentsService.getCommentsByPostId(
       postId,
       query,
     );
-    if (!result) res.sendStatus(HttpStatus.NOT_FOUND); //404
+    if (!result) return res.sendStatus(HttpStatus.NOT_FOUND); //404
     return result;
   }
 
@@ -77,6 +81,8 @@ export class PostsController {
     @Body() blogInput: PostInputDto,
     @Res({ passthrough: true }) res: Response,
   ) {
+    if (!id) return res.sendStatus(HttpStatus.NOT_FOUND); //404
+
     const result = await this.postsService.updatePost(id, blogInput);
     if (!result) res.sendStatus(HttpStatus.NOT_FOUND); //404
     return res.sendStatus(HttpStatus.NO_CONTENT); //204
@@ -86,10 +92,12 @@ export class PostsController {
     @Param('id') id: string,
     @Res({ passthrough: true }) res: Response,
   ) {
+    if (!id) return res.sendStatus(HttpStatus.NOT_FOUND); //404
+
     // возвращает удаленный объект
     // или null если не найдет его
     const result = await this.postsService.remove(id);
-    if (!result) res.sendStatus(HttpStatus.NOT_FOUND); //404
+    if (!result) return res.sendStatus(HttpStatus.NOT_FOUND); //404
     return res.sendStatus(HttpStatus.NO_CONTENT); //204
   }
 }
