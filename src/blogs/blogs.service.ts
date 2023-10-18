@@ -142,10 +142,10 @@ export class BlogsService {
     return result;
   }
 
-  async remove(id: string): Promise<any> {
-    const result = await this.blogModel.findByIdAndRemove(id);
+  async delete(id: string): Promise<any> {
+    const result = await this.blogModel.findByIdAndDelete(id);
     console.log('123===remove', result);
-    // возвращает удаленный объект || null если не найдет
+    // ???возвращает удаленный объект || null если не найдет
     return result;
   }
 

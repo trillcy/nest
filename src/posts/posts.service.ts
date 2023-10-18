@@ -38,7 +38,9 @@ export class PostsService {
   async getPostsByBlogId(
     blogId: string,
     query: QueryPostInputDto,
-  ): Promise<PaginatorPostViewDto> {
+  ): Promise<PaginatorPostViewDto | null> {
+    const blog = await this.blogModel.findById(blogId);
+    if (!blog) return null;
     let sortField =
       query.sortBy && postsFields.includes(query.sortBy)
         ? query.sortBy
@@ -73,7 +75,6 @@ export class PostsService {
       .skip(skipElements)
       .limit(size)
       .lean();
-
     const totalCount = await this.postModel.countDocuments({ blogId });
     const pagesCount = Math.ceil(totalCount / size);
 

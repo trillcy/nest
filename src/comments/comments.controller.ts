@@ -11,17 +11,7 @@ import {
   Query,
   Res,
 } from '@nestjs/common';
-import {
-  BlogInputDto,
-  BlogPostInputDto,
-  BlogQueryInputDto,
-  BlogViewDto,
-  PaginatorBlogViewDto,
-} from 'src/blogs/blogs.dto';
 import { CommentsService } from './comments.service';
-import { Comment } from './comments.schema';
-import { PostViewDto } from 'src/posts/posts.dto';
-import { PostsService } from 'src/posts/posts.service';
 import { Response } from 'express';
 import { CommentViewDto, QueryCommentInputDto } from './comments.dto';
 

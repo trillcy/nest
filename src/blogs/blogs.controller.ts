@@ -61,33 +61,46 @@ export class BlogsController {
   getPostsByBlogId(
     @Param('blogId') blogId: string,
     @Query() query: QueryPostInputDto,
-  ): Promise<PaginatorPostViewDto> {
-    return this.postsService.getPostsByBlogId(blogId, query);
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<PaginatorPostViewDto | null> {
+    const result = this.postsService.getPostsByBlogId(blogId, query);
+    if (!result) res.sendStatus(HttpStatus.NOT_FOUND); //404
+    return result;
   }
 
   @Post('/:blogId/posts')
   async createPostForBlog(
     @Body() postInput: BlogPostInputDto,
     @Param('blogId') blogId: string,
+    @Res({ passthrough: true }) res: Response,
   ): Promise<PostViewDto | null> {
     const newPostInput = { ...postInput, blogId };
-    return await this.blogsService.createPostForBlog(blogId, postInput);
+    const result = await this.blogsService.createPostForBlog(blogId, postInput);
+    if (!result) res.sendStatus(HttpStatus.NOT_FOUND); //404
+    return result;
   }
 
   @Put('/:id')
   update(
     @Param('id') id: string,
     @Body() blogInput: BlogInputDto,
-  ): Promise<any> {
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const result = this.blogsService.update(id, blogInput);
     console.log('76---put', result);
-    return result;
+    if (!result) res.sendStatus(HttpStatus.NOT_FOUND); //404
+    return res.sendStatus(HttpStatus.NO_CONTENT); //204
   }
 
   @Delete('/:id')
-  remove(@Param('id') id: string): Promise<any> {
+  async remove(
+    @Param('id') id: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     // TODO: если возвращается null, то документ не найден - надо 404
-    return this.blogsService.remove(id);
+    const result = await this.blogsService.delete(id);
+    if (!result) return res.sendStatus(HttpStatus.NOT_FOUND); //404
+    return res.sendStatus(HttpStatus.NO_CONTENT); //204
   }
   // @Delete()
   // removeAll(): Promise<boolean> {
