@@ -15,6 +15,7 @@ import { Comment, CommentSchema } from './comments/comments.schema';
 import { TestingController } from './testing/testing.controller';
 import { ConfigModule } from '@nestjs/config';
 import { CommentsService } from './comments/comments.service';
+import { AuthModule } from './auth/auth.module';
 
 const mongooseModels = [
   { name: Blog.name, schema: BlogSchema },
@@ -33,6 +34,7 @@ const mongooseModels = [
     //   'mongodb+srv://aermakov72:MObdb4xJff0p1YPC@cluster0.byjv9wm.mongodb.net/incubator?retryWrites=true&w=majority',
     // ),
     MongooseModule.forFeature(mongooseModels),
+    AuthModule,
   ],
   controllers: [
     AppController,

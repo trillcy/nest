@@ -8,6 +8,8 @@ import {
   Body,
   Res,
   HttpStatus,
+  BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import {
   PaginatorUserViewDto,
@@ -17,8 +19,10 @@ import {
 } from './users.dto';
 import { UsersService } from './users.service';
 import { Response } from 'express';
+import { AuthGuard } from 'src/auth.guard';
 
 @Controller('users')
+@UseGuards(AuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -30,11 +34,25 @@ export class UsersController {
     console.log('9--user.getAll', result);
     return result;
   }
-
   @Post()
   async createUser(
     @Body() userInput: UserInputDto,
   ): Promise<UserViewDto | null> {
+    const { login, email, password } = userInput;
+
+    const isUserExist = async (login: string, email: string) => {
+      const userLogin = await this.usersService.findByLogin(login);
+      if (userLogin)
+        throw new BadRequestException([
+          { message: 'user exists', field: 'login' },
+        ]);
+      const userEmail = await this.usersService.findByEmail(email);
+      if (userEmail)
+        throw new BadRequestException([
+          { message: 'user exists', field: 'email' },
+        ]);
+    };
+    await isUserExist(login, email);
     const result = await this.usersService.createUser(userInput);
     console.log('21--user', result);
     return result;

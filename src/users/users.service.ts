@@ -9,6 +9,7 @@ import {
 } from './users.dto';
 import { User, UserDocument } from './users.schema';
 import bcrypt from 'bcrypt';
+import { validateOrReject } from 'class-validator';
 const usersFields = ['id', 'login', 'email', 'createdAt'];
 
 const usersDirections = ['asc', 'desc'];
@@ -16,6 +17,32 @@ const usersDirections = ['asc', 'desc'];
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+
+  async findByLogin(login: string): Promise<UserViewDto | null> {
+    const result = await this.userModel.findOne({
+      'accountData.userName.login': login,
+    });
+    if (!result) return null;
+    return {
+      id: result.id,
+      login: result.accountData.userName.login,
+      email: result.accountData.userName.email,
+      createdAt: result.accountData.createdAt,
+    };
+  }
+
+  async findByEmail(email: string): Promise<UserViewDto | null> {
+    const result = await this.userModel.findOne({
+      'accountData.userName.email': email,
+    });
+    if (!result) return null;
+    return {
+      id: result.id,
+      login: result.accountData.userName.login,
+      email: result.accountData.userName.email,
+      createdAt: result.accountData.createdAt,
+    };
+  }
 
   async getAll(query: QueryUserInputDto): Promise<PaginatorUserViewDto> {
     const searchLogin = query.searchLoginTerm ? query.searchLoginTerm : '';
@@ -112,17 +139,16 @@ export class UsersService {
         passwordSalt,
         createdAt: date.toISOString(),
       },
-      // emailConfirmation: {
-      //   confirmationCode: null,
-      //   expirationDate: null,
-      //   isConfirmed: false,
-      // },
-      // passwordConfirmation: {
-      //   confirmationCode: null,
-      //   expirationDate: null,
-      //   isConfirmed: false,
-      // },
-      // deletedTokens: [],
+      emailConfirmation: {
+        confirmationCode: null,
+        expirationDate: null,
+        isConfirmed: false,
+      },
+      passwordConfirmation: {
+        confirmationCode: null,
+        expirationDate: null,
+        isConfirmed: false,
+      },
     };
 
     const user = new this.userModel({ ...newElement });
